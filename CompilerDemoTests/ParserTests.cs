@@ -15,10 +15,10 @@ namespace CompilerDemoTests
             var lexer = new Lexer();
             var tokens = lexer.Tokenizer(inputString);
             var output = TokenPrinter.PrintTokens(tokens);
-            var parser = new Parser(tokens);
+            var parser = new Parser();
 
             // Act
-            var ast = parser.Parse();
+            var ast = parser.Parse(tokens);
 
             // Assert
             Assert.IsTrue(true);
@@ -30,10 +30,11 @@ namespace CompilerDemoTests
             // Arrange
             var inputString = "var x = (5 + 3) * 2\r\nprint x";
             var lexer = new Lexer();
-            var parser = new Parser(lexer.Tokenizer(inputString));
+            var tokens = lexer.Tokenizer(inputString);
+            var parser = new Parser();
 
             // Act
-            var ast = parser.Parse();
+            var ast = parser.Parse(tokens);
 
             // Assert
             Assert.That(ast.Count, Is.EqualTo(2)); // Should have two nodes
@@ -73,10 +74,10 @@ namespace CompilerDemoTests
             var inputString = "var x = (5 + 3) * 2 - 10\r\nprint x";
             var lexer = new Lexer();
             var tokens = lexer.Tokenizer(inputString);
-            var parser = new Parser(tokens);
+            var parser = new Parser();
 
             // Act
-            var ast = parser.Parse();
+            var ast = parser.Parse(tokens);
 
             var output = TokenPrinter.PrintTokens(tokens);
             output += AbstractTreePrinter.Print(ast);
@@ -122,15 +123,78 @@ namespace CompilerDemoTests
 
 
         [Test]
+        public void ExpressionWithMultipleParenthesesTest()
+        {
+            // Arrange
+            var inputString = "var x = (5 + 3) * (2 - 10)\r\nprint x";
+            var lexer = new Lexer();
+            var tokens = lexer.Tokenizer(inputString);
+            var parser = new Parser();
+
+            // Act
+            var ast = parser.Parse(tokens);
+
+            var output = TokenPrinter.PrintTokens(tokens);
+            output += AbstractTreePrinter.Print(ast);
+
+            // Assert
+            Assert.That(ast.Count, Is.EqualTo(2)); // Should have two nodes
+            Assert.IsInstanceOf<VariableDeclarationNode>(ast[0]);
+            Assert.IsInstanceOf<PrintStatementNode>(ast[1]);
+
+            var varNode = (VariableDeclarationNode)ast[0];
+            Assert.That(varNode.VariableName, Is.EqualTo("x"));
+
+            Assert.IsInstanceOf<BinaryExpressionNode>(varNode.Expression);
+            var binaryNode = (BinaryExpressionNode)varNode.Expression;
+            Assert.That(binaryNode.Operator, Is.EqualTo("*"));
+
+
+            Assert.IsInstanceOf<ParenthesisExpressionNode>(binaryNode.Left);
+            var parenthesisNodeLeft = (ParenthesisExpressionNode)binaryNode.Left;
+            Assert.IsInstanceOf<ParenthesisExpressionNode>(binaryNode.Right);
+            var parenthesisNodeRight = (ParenthesisExpressionNode)binaryNode.Right;
+
+            Assert.IsInstanceOf<BinaryExpressionNode>(parenthesisNodeLeft.Expression);
+            var innerBinaryNode = (BinaryExpressionNode)parenthesisNodeLeft.Expression;
+            Assert.That(innerBinaryNode.Operator, Is.EqualTo("+"));
+
+            Assert.IsInstanceOf<NumberNode>(innerBinaryNode.Left);
+            Assert.That(((NumberNode)innerBinaryNode.Left).Value, Is.EqualTo(5));
+            Assert.IsInstanceOf<NumberNode>(innerBinaryNode.Right);
+            Assert.That(((NumberNode)innerBinaryNode.Right).Value, Is.EqualTo(3));
+
+
+
+            Assert.IsInstanceOf<BinaryExpressionNode>(parenthesisNodeRight.Expression);
+            var innerBinaryNodeRight = (BinaryExpressionNode)parenthesisNodeRight.Expression;
+            Assert.That(innerBinaryNodeRight.Operator, Is.EqualTo("-"));
+
+            Assert.IsInstanceOf<NumberNode>(innerBinaryNodeRight.Left);
+            Assert.That(((NumberNode)innerBinaryNodeRight.Left).Value, Is.EqualTo(2));
+            Assert.IsInstanceOf<NumberNode>(innerBinaryNodeRight.Right);
+            Assert.That(((NumberNode)innerBinaryNodeRight.Right).Value, Is.EqualTo(10));
+
+
+            // Check the print node
+            var printNode = (PrintStatementNode)ast[1];
+            Assert.IsInstanceOf<VariableReferenceNode>(printNode.Expression);
+            var variableNode = (VariableReferenceNode)printNode.Expression;
+            Assert.That(variableNode.VariableName, Is.EqualTo("x"));
+        }
+
+
+        [Test]
         public void SyntaxErrorInParenthesesTest()
         {
             // Arrange
             var inputString = "var x = (5 + 3 * 2\r\nprint x"; // Missing closing parenthesis
             var lexer = new Lexer();
-            var parser = new Parser(lexer.Tokenizer(inputString));
+            var parser = new Parser();
+            var tokens = lexer.Tokenizer(inputString);
 
             // Act & Assert
-            var ex = Assert.Throws<Exception>(() => parser.Parse());
+            var ex = Assert.Throws<Exception>(() => parser.Parse(tokens));
             Assert.That(ex.Message, Is.EqualTo("Syntax error: Expected ')' at position 9."));
         }
 

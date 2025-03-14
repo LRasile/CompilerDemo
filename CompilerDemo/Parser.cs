@@ -4,15 +4,11 @@ namespace CompilerDemo
     public class Parser
     {
         private int _index = 0;
-        private List<Token> _tokens;
+        private List<Token> _tokens = new List<Token>();
 
-        public Parser(List<Token> tokens)
+        public List<AbstractSyntaxTreeNode> Parse(List<Token> tokens)
         {
             _tokens = tokens;
-        }
-
-        public List<AbstractSyntaxTreeNode> Parse()
-        {
             var nodes = new List<AbstractSyntaxTreeNode>();
 
             while (_index < _tokens.Count)
