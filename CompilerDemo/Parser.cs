@@ -1,4 +1,6 @@
-﻿using CompilerDemo.AbstractSyntaxTree;
+﻿using POCOs.AbstractSyntaxTree;
+using POCOs.Token;
+
 namespace CompilerDemo
 {
     public class Parser

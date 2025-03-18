@@ -1,6 +1,6 @@
 ﻿using CompilerDemo;
-using CompilerDemo.AbstractSyntaxTree;
-using Newtonsoft.Json.Linq;
+using POCOs.AbstractSyntaxTree;
+using POCOs.Token;
 
 namespace CompilerDemoTests
 {
@@ -77,7 +77,7 @@ namespace CompilerDemoTests
             var parser = new Parser();
 
             // Act
-            var ast = parser.Parse(tokens);
+            var ast = parser.Parse(tokens); 
 
             var output = TokenPrinter.PrintTokens(tokens);
             output += AbstractTreePrinter.Print(ast);

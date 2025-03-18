@@ -1,4 +1,4 @@
-﻿namespace CompilerDemo.AbstractSyntaxTree
+﻿namespace POCOs.AbstractSyntaxTree
 {
     public class PrintStatementNode : AbstractSyntaxTreeNode
     {

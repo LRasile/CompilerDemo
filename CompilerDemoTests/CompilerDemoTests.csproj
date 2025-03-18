@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CompilerDemo\CompilerDemo.csproj" />
+    <ProjectReference Include="..\POCOs\POCOs.csproj" />
   </ItemGroup>
 
   <ItemGroup>

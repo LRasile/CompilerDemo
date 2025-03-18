@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\POCOs\POCOs.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="CFlat.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

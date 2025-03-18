@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace CompilerDemo.AbstractSyntaxTree
+namespace POCOs.AbstractSyntaxTree
 {
     public abstract class AbstractSyntaxTreeNode
     {
